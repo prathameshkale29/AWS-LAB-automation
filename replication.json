@@ -1,0 +1,17 @@
+{
+    "Role": "arn:aws:iam::578609712039:role/CafeRole",
+    "Rules": [
+        {
+            "ID": "ReplicateAllToDR",
+            "Status": "Enabled",
+            "Priority": 1,
+            "Filter": {},
+            "Destination": {
+                "Bucket": "arn:aws:s3:::cafe-website-dr-578609712039"
+            },
+            "DeleteMarkerReplication": {
+                "Status": "Disabled"
+            }
+        }
+    ]
+}

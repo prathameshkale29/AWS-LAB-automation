@@ -1,0 +1,1 @@
+{"KeyName":"vockey","Monitoring":{"Enabled":true},"ImageId":"ami-07d5a82008941f7bd","SecurityGroupIds":["sg-0137fcd90e08f745b"],"InstanceType":"t2.micro"}

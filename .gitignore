@@ -1,0 +1,23 @@
+# Large binary/zip assets
+*.zip
+*.exe
+*.log
+
+# Extracted lab assets
+db/
+setup/
+efs/
+static-website/
+
+# Temporary response files
+response.json
+
+# Lab instruction text files
+*.txt
+
+# Scratch/temp scripts
+sanitize_creds.py
+
+# AWS credential files (never commit)
+.aws/
+credentials

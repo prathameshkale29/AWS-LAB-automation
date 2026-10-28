@@ -1,0 +1,7 @@
+{
+    "commands":  [
+                     "cd /home/ec2-user/efs",
+                     "sudo fio --name=fio-efs --filesize=1G --filename=./fio-efs-test.img --bs=1M --nrfiles=1 --direct=1 --sync=0 --rw=write --iodepth=200 --ioengine=libaio --runtime=30 --time_based",
+                     "ls -lh ./fio-efs-test.img"
+                 ]
+}

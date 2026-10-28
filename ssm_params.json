@@ -1,0 +1,12 @@
+{
+    "commands":  [
+                     "DEVICE=/dev/sdc",
+                     "if [ ! -b $DEVICE ] \u0026\u0026 [ -b /dev/xvdc ]; then DEVICE=/dev/xvdc; fi",
+                     "if [ ! -b $DEVICE ] \u0026\u0026 [ -b /dev/nvme2n1 ]; then DEVICE=/dev/nvme2n1; fi",
+                     "echo Using device: $DEVICE",
+                     "sudo mkdir -p /mnt/data-store2",
+                     "mountpoint -q /mnt/data-store2 || sudo mount $DEVICE /mnt/data-store2",
+                     "ls -l /mnt/data-store2/file.txt",
+                     "cat /mnt/data-store2/file.txt"
+                 ]
+}
