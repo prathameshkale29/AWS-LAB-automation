@@ -1,6 +1,6 @@
 # AWS Lab Automation Scripts
 
-PowerShell automation scripts for AWS Academy labs — covering VPC, EC2, EBS, RDS, EFS, Lambda, Elastic Beanstalk, IAM, ELB/ASG, and database migration.
+PowerShell automation scripts for AWS Academy labs — covering VPC, EC2, EBS, RDS, EFS, Lambda, Elastic Beanstalk, IAM, ELB/ASG, High Availability, and database migration.
 
 ## Labs Covered
 
@@ -11,6 +11,7 @@ PowerShell automation scripts for AWS Academy labs — covering VPC, EC2, EBS, R
 | `lab4.ps1` | Lab 4 – EBS Volumes |
 | `lab5.ps1` | Lab 5 – Load Balancing & Auto Scaling |
 | `lab6.ps1` | Lab 6 – Advanced Networking |
+| `ha_lab.ps1` | Guided Lab – Creating a Highly Available Environment |
 | `rds_lab.ps1` | Guided Lab – Creating an Amazon RDS Database |
 | `migration_lab.ps1` | Challenge Lab – Migrating a Database to Amazon RDS |
 | `efs_lab.ps1` | Lab – Amazon EFS |
@@ -41,18 +42,14 @@ $env:AWS_SESSION_TOKEN     = "your-session-token"   # if using temporary credent
 Set your credentials, then run the desired lab script:
 
 ```powershell
-# Example: run the RDS lab
-$env:AWS_ACCESS_KEY_ID     = "..."
-$env:AWS_SECRET_ACCESS_KEY = "..."
-$env:AWS_SESSION_TOKEN     = "..."
-
-.\rds_lab.ps1
+# Example: run the Highly Available Environment lab
+.\ha_lab.ps1
 ```
 
 To clean up resources after a lab:
 
 ```powershell
-.\cleanup_rds.ps1
+.\cleanup_ha.ps1
 ```
 
 ## Security Note
@@ -63,4 +60,3 @@ To clean up resources after a lab:
 ## License
 
 MIT
-
