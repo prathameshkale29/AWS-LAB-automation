@@ -19,9 +19,9 @@ $region = $env:AWS_DEFAULT_REGION
 if (-not $region) { $region = "us-east-1" }
 Write-Host "Operating Region: $region" -ForegroundColor Green
 
-$networkTemplate = Join-Path $PSScriptRoot "lab-network.yaml"
-$appTemplate     = Join-Path $PSScriptRoot "lab-application.yaml"
-$app2Template    = Join-Path $PSScriptRoot "lab-application2.yaml"
+$networkTemplate = (Join-Path $PSScriptRoot "lab-network.yaml").Replace("\", "/")
+$appTemplate     = (Join-Path $PSScriptRoot "lab-application.yaml").Replace("\", "/")
+$app2Template    = (Join-Path $PSScriptRoot "lab-application2.yaml").Replace("\", "/")
 
 # 1. Task 1: Deploy Networking Layer (lab-network)
 Write-Host "`n[Task 1] Deploying networking layer (lab-network)..." -ForegroundColor Yellow
@@ -29,7 +29,7 @@ $netStatus = (aws cloudformation describe-stacks --stack-name "lab-network" --re
 if (-not $netStatus -or $netStatus -eq "None") {
     aws cloudformation create-stack `
         --stack-name "lab-network" `
-        --template-body file://$networkTemplate `
+        --template-body "file://$networkTemplate" `
         --tags Key=application,Value=inventory `
         --region $region | Out-Null
     
@@ -50,7 +50,7 @@ $appStatus = (aws cloudformation describe-stacks --stack-name "lab-application" 
 if (-not $appStatus -or $appStatus -eq "None") {
     aws cloudformation create-stack `
         --stack-name "lab-application" `
-        --template-body file://$appTemplate `
+        --template-body "file://$appTemplate" `
         --parameters ParameterKey=NetworkStackName,ParameterValue=lab-network `
         --tags Key=application,Value=inventory `
         --region $region | Out-Null
@@ -69,7 +69,7 @@ Write-Host "  Application URL: $appUrl" -ForegroundColor Yellow
 Write-Host "`n[Task 3] Updating stack lab-application with HTTPS port 443..." -ForegroundColor Yellow
 $updateOut = aws cloudformation update-stack `
     --stack-name "lab-application" `
-    --template-body file://$app2Template `
+    --template-body "file://$app2Template" `
     --parameters ParameterKey=NetworkStackName,ParameterValue=lab-network `
     --region $region 2>&1
 
@@ -106,3 +106,4 @@ Write-Host " CloudFormation Lab Completed Successfully!                         
 Write-Host " Network Stack (lab-network) is retained.                               " -ForegroundColor Green
 Write-Host " Application Stack (lab-application) deleted with Snapshot preserved.  " -ForegroundColor Green
 Write-Host "========================================================================" -ForegroundColor Cyan
+
