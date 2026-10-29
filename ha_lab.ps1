@@ -311,10 +311,18 @@ if (-not $natCheck.NatGateways -or $natCheck.NatGateways.Count -eq 0) {
 
     # Associate with Private Subnet 2
     Write-Host "  Associating Private Route Table 2 with Private Subnet 2 ($privSubnet2)..."
-    aws ec2 associate-route-table `
-        --route-table-id $rt2Id `
-        --subnet-id $privSubnet2 `
-        --region $region | Out-Null
+    $existingAssoc = (aws ec2 describe-route-tables --filters "Name=association.subnet-id,Values=$privSubnet2" --region $region --query "RouteTables[0].Associations[?SubnetId=='$privSubnet2'].RouteTableAssociationId" --output text 2>$null)
+    if ($existingAssoc -and $existingAssoc -ne "None") {
+        aws ec2 replace-route-table-association `
+            --association-id $existingAssoc `
+            --route-table-id $rt2Id `
+            --region $region | Out-Null
+    } else {
+        aws ec2 associate-route-table `
+            --route-table-id $rt2Id `
+            --subnet-id $privSubnet2 `
+            --region $region | Out-Null
+    }
     Write-Host "  Highly Available NAT Gateway and routing configured!" -ForegroundColor Green
 } else {
     Write-Host "  NatGateway2 already exists."
@@ -327,3 +335,4 @@ Write-Host " ALB DNS Name: http://$albDns" -ForegroundColor Yellow
 Write-Host " Target Group: $tgArn"
 Write-Host " Auto Scaling Group: Inventory-ASG"
 Write-Host "========================================================================" -ForegroundColor Cyan
+
