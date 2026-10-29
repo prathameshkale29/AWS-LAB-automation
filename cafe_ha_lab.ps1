@@ -264,25 +264,12 @@ if (-not $asgCheck -or $asgCheck -eq "None") {
 
     # Target Tracking Scaling Policy: Average CPU 25%, Warmup 60s
     Write-Host "  Configuring Target Tracking Scaling Policy (Average CPU 25%)..."
-    $scalingPolicyConfig = @{
-        TargetValue = 25.0
-        PredefinedMetricSpecification = @{
-            PredefinedMetricType = "ASGAverageCPUUtilization"
-        }
-        EstimatedInstanceWarmup = 60
-    }
-    $scalingPolicyJson = $scalingPolicyConfig | ConvertTo-Json -Depth 5 -Compress
-    $policyPath = Join-Path $PSScriptRoot "asg_policy.json"
-    Set-Content -Path $policyPath -Value $scalingPolicyJson
-
     aws autoscaling put-scaling-policy `
         --auto-scaling-group-name "Cafe-ASG" `
         --policy-name "Cafe-CPU-Scaling-Policy" `
         --policy-type "TargetTrackingScaling" `
-        --target-tracking-configuration file://$policyPath `
+        --target-tracking-configuration "{\`"PredefinedMetricSpecification\`":{\`"PredefinedMetricType\`":\`"ASGAverageCPUUtilization\`"}, \`"TargetValue\`":25.0, \`"EstimatedInstanceWarmup\`":60}" `
         --region $region | Out-Null
-        
-    Remove-Item $policyPath -Force -ErrorAction SilentlyContinue
     Write-Host "  Scaling Policy attached successfully." -ForegroundColor Green
 } else {
     Write-Host "  Auto Scaling Group Cafe-ASG already exists."
@@ -313,3 +300,4 @@ Write-Host " Application URL: http://$albDns/cafe" -ForegroundColor Yellow
 Write-Host " Target Group: $tgArn"
 Write-Host " Auto Scaling Group: Cafe-ASG (Desired: 2, Min: 2, Max: 6)"
 Write-Host "========================================================================" -ForegroundColor Cyan
+
