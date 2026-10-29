@@ -1,6 +1,6 @@
 # AWS Lab Automation Scripts
 
-PowerShell automation scripts for AWS Academy labs — covering VPC, EC2, EBS, RDS, EFS, Lambda, Elastic Beanstalk, IAM, ELB/ASG, CloudFormation, High Availability, and Café Scalable environments.
+PowerShell automation scripts for AWS Academy labs — covering VPC, EC2, EBS, RDS, EFS, Lambda, Elastic Beanstalk, IAM, ELB/ASG, CloudFormation, CI/CD with CodeCommit/CodePipeline, High Availability, and Café Scalable environments.
 
 ## Labs Covered
 
@@ -12,6 +12,7 @@ PowerShell automation scripts for AWS Academy labs — covering VPC, EC2, EBS, R
 | `lab5.ps1` | Lab 5 – Load Balancing & Auto Scaling |
 | `lab6.ps1` | Lab 6 – Advanced Networking |
 | `cfn_lab.ps1` | Guided Lab – Automating Infrastructure Deployment with AWS CloudFormation |
+| `cicd_cafe_lab.ps1` | Challenge Lab – Automating Infrastructure Deployment (CloudFormation, CodeCommit, CodePipeline) |
 | `ha_lab.ps1` | Guided Lab – Creating a Highly Available Environment |
 | `cafe_ha_lab.ps1` | Challenge Lab – Creating a Scalable and Highly Available Environment for the Café |
 | `rds_lab.ps1` | Guided Lab – Creating an Amazon RDS Database |
@@ -44,14 +45,14 @@ $env:AWS_SESSION_TOKEN     = "your-session-token"   # if using temporary credent
 Set your credentials, then run the desired lab script:
 
 ```powershell
-# Example: run the CloudFormation lab
-.\cfn_lab.ps1
+# Example: run the Automating Infrastructure Deployment Challenge lab
+.\cicd_cafe_lab.ps1
 ```
 
 To clean up resources after a lab:
 
 ```powershell
-.\cleanup_cfn.ps1
+.\cleanup_cicd_cafe.ps1
 ```
 
 ## Security Note
