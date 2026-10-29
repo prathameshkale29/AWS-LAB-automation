@@ -216,8 +216,12 @@ if (-not $asgCheck -or $asgCheck -eq "None") {
         --target-group-arns $tgArn `
         --health-check-type "ELB" `
         --health-check-grace-period 90 `
-        --metrics-collection "Granularity=1Minute" `
         --tags "Key=Name,Value=Inventory-App,PropagateAtLaunch=true" `
+        --region $region
+
+    aws autoscaling enable-metrics-collection `
+        --auto-scaling-group-name "Inventory-ASG" `
+        --granularity "1Minute" `
         --region $region
     Write-Host "  Created Auto Scaling Group Inventory-ASG with Desired=2, Min=2, Max=2" -ForegroundColor Green
 } else {
