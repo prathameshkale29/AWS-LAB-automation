@@ -1,5 +1,5 @@
 # ha_lab.ps1 - Automated Deployment for Guided Lab: Creating a Highly Available Environment
-$ErrorActionPreference = "Stop"
+$ErrorActionPreference = "Continue"
 
 Write-Host "========================================================================" -ForegroundColor Cyan
 Write-Host " Starting Guided Lab: Creating a Highly Available Environment Automation" -ForegroundColor Cyan
@@ -38,10 +38,10 @@ $vpcId = $vpcJson.Vpcs[0].VpcId
 Write-Host "  Lab VPC ID: $vpcId"
 
 $subnetsJson = aws ec2 describe-subnets --filters "Name=vpc-id,Values=$vpcId" --region $region | ConvertFrom-Json
-$pubSubnet1 = ($subnetsJson.Subnets | Where-Object { ($_.Tags.Value -contains "Public Subnet 1") -or ($_.Tags.Value -contains "Public Subnet 1 ") -or ($_.CidrBlock -eq "10.0.0.0/24") }).SubnetId
-$pubSubnet2 = ($subnetsJson.Subnets | Where-Object { ($_.Tags.Value -contains "Public Subnet 2") -or ($_.Tags.Value -contains "Public Subnet 2 ") -or ($_.CidrBlock -eq "10.0.2.0/24") }).SubnetId
-$privSubnet1 = ($subnetsJson.Subnets | Where-Object { ($_.Tags.Value -contains "Private Subnet 1") -or ($_.Tags.Value -contains "Private Subnet 1 ") -or ($_.CidrBlock -eq "10.0.1.0/24") }).SubnetId
-$privSubnet2 = ($subnetsJson.Subnets | Where-Object { ($_.Tags.Value -contains "Private Subnet 2") -or ($_.Tags.Value -contains "Private Subnet 2 ") -or ($_.CidrBlock -eq "10.0.3.0/24") }).SubnetId
+$pubSubnet1 = ($subnetsJson.Subnets | Where-Object { ($_.Tags.Value -like "*Public Subnet 1*") -or ($_.CidrBlock -eq "10.0.0.0/24") }).SubnetId | Select-Object -First 1
+$pubSubnet2 = ($subnetsJson.Subnets | Where-Object { ($_.Tags.Value -like "*Public Subnet 2*") -or ($_.CidrBlock -eq "10.0.1.0/24") }).SubnetId | Select-Object -First 1
+$privSubnet1 = ($subnetsJson.Subnets | Where-Object { ($_.Tags.Value -like "*Private Subnet 1*") -or ($_.CidrBlock -eq "10.0.2.0/23") }).SubnetId | Select-Object -First 1
+$privSubnet2 = ($subnetsJson.Subnets | Where-Object { ($_.Tags.Value -like "*Private Subnet 2*") -or ($_.CidrBlock -eq "10.0.4.0/23") }).SubnetId | Select-Object -First 1
 
 Write-Host "  Public Subnet 1:  $pubSubnet1"
 Write-Host "  Public Subnet 2:  $pubSubnet2"
@@ -84,7 +84,7 @@ if (-not $lbSg) {
 }
 
 # Create Target Group (Inventory-App)
-$tgArn = (aws elbv2 describe-target-groups --names "Inventory-App" --region $region --query "TargetGroups[0].TargetGroupArn" --output text 2>$null)
+$tgArn = (aws elbv2 describe-target-groups --region $region --query "TargetGroups[?TargetGroupName=='Inventory-App'].TargetGroupArn | [0]" --output text 2>$null)
 if (-not $tgArn -or $tgArn -eq "None") {
     Write-Host "  Creating Target Group: Inventory-App..."
     $tgArn = (aws elbv2 create-target-group `
@@ -103,7 +103,7 @@ if (-not $tgArn -or $tgArn -eq "None") {
 }
 
 # Create Application Load Balancer (Inventory-LB)
-$albArn = (aws elbv2 describe-load-balancers --names "Inventory-LB" --region $region --query "LoadBalancers[0].LoadBalancerArn" --output text 2>$null)
+$albArn = (aws elbv2 describe-load-balancers --region $region --query "LoadBalancers[?LoadBalancerName=='Inventory-LB'].LoadBalancerArn | [0]" --output text 2>$null)
 if (-not $albArn -or $albArn -eq "None") {
     Write-Host "  Creating Application Load Balancer: Inventory-LB..."
     $albJson = (aws elbv2 create-load-balancer `
@@ -186,7 +186,7 @@ $ltDataJson = $ltData | ConvertTo-Json -Depth 5 -Compress
 $ltDataPath = Join-Path $PSScriptRoot "lt_inventory.json"
 Set-Content -Path $ltDataPath -Value $ltDataJson
 
-$ltCheck = (aws ec2 describe-launch-templates --launch-template-names "Inventory-LT" --region $region --query "LaunchTemplates[0].LaunchTemplateId" --output text 2>$null)
+$ltCheck = (aws ec2 describe-launch-templates --region $region --query "LaunchTemplates[?LaunchTemplateName=='Inventory-LT'].LaunchTemplateId | [0]" --output text 2>$null)
 if (-not $ltCheck -or $ltCheck -eq "None") {
     Write-Host "  Creating Launch Template: Inventory-LT..."
     $ltId = (aws ec2 create-launch-template `
@@ -203,7 +203,7 @@ if (-not $ltCheck -or $ltCheck -eq "None") {
 Remove-Item $ltDataPath -Force -ErrorAction SilentlyContinue
 
 # Create Auto Scaling Group
-$asgCheck = (aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names "Inventory-ASG" --region $region --query "AutoScalingGroups[0].AutoScalingGroupName" --output text 2>$null)
+$asgCheck = (aws autoscaling describe-auto-scaling-groups --region $region --query "AutoScalingGroups[?AutoScalingGroupName=='Inventory-ASG'].AutoScalingGroupName | [0]" --output text 2>$null)
 if (-not $asgCheck -or $asgCheck -eq "None") {
     Write-Host "  Creating Auto Scaling Group: Inventory-ASG..."
     aws autoscaling create-auto-scaling-group `
@@ -335,4 +335,3 @@ Write-Host " ALB DNS Name: http://$albDns" -ForegroundColor Yellow
 Write-Host " Target Group: $tgArn"
 Write-Host " Auto Scaling Group: Inventory-ASG"
 Write-Host "========================================================================" -ForegroundColor Cyan
-
