@@ -59,3 +59,4 @@ if ($amiId -and $amiId -ne "None") {
 }
 
 Write-Host "Cleanup completed." -ForegroundColor Green
+
